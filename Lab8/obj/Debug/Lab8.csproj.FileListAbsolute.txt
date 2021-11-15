@@ -1,0 +1,13 @@
+C:\labs\CompGraphicsLab8\Lab8\bin\Debug\Lab8.exe.config
+C:\labs\CompGraphicsLab8\Lab8\bin\Debug\Lab8.exe
+C:\labs\CompGraphicsLab8\Lab8\bin\Debug\Lab8.pdb
+C:\labs\CompGraphicsLab8\Lab8\bin\Debug\Newtonsoft.Json.dll
+C:\labs\CompGraphicsLab8\Lab8\bin\Debug\Newtonsoft.Json.xml
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.csprojAssemblyReference.cache
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.Properties.Resources.resources
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.csproj.GenerateResource.cache
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.csproj.CoreCompileInputs.cache
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.csproj.CopyComplete
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.exe
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.pdb
+C:\labs\CompGraphicsLab8\Lab8\obj\Debug\Lab8.Form1.resources
