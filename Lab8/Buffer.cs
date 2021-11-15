@@ -14,10 +14,10 @@ namespace Lab8
         {
             ProjMode = projMode;
 
-            Bitmap newImg = new Bitmap(width, height);
+            Bitmap bitmap = new Bitmap(width, height);
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
-                    newImg.SetPixel(i, j, Color.White);
+                    bitmap.SetPixel(i, j, Color.White);
 
             float[,] zbuff = new float[width, height];
             for (int i = 0; i < width; i++)
@@ -36,7 +36,6 @@ namespace Lab8
             int ind = 0;
             for (int i = 0; i < rasterizedScene.Count; i++)
             {
-                //Смещение по центру фигуры
                 var figureLeftX = rasterizedScene[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.X));
                 var figureLeftY = rasterizedScene[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.Y));
                 var figureRightX = rasterizedScene[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.X));
@@ -58,14 +57,14 @@ namespace Lab8
                             if (point.Z > zbuff[x, y])
                             {
                                 zbuff[x, y] = point.Z;
-                                newImg.SetPixel(x, y, colors[ind % colors.Count]);
+                                bitmap.SetPixel(x, y, colors[ind % colors.Count]);
                             }
                         }
                     }
                     ind++;
                 }
             }
-            return newImg;
+            return bitmap;
         }
 
         private static List<List<Point3D>> MakeRasterization(Figure fig)

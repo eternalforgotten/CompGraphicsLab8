@@ -43,11 +43,11 @@ namespace Lab8
         }
 
 
-        public List<Edge> Project(Figure fig, int mode)
+        public List<Edge> ProjectWithEdges(Figure fig, int projectType)
         {
 
             float[,] matr;
-            switch (mode)
+            switch (projectType)
             {
                 case 0:
                     matr = perspective;
@@ -86,10 +86,34 @@ namespace Lab8
             return edges;
         }
 
-        public List<Point3D> ProjectZBuff(List<Point3D> surfaces, int mode = 0)
+        public List<Point3D> ProjectWithPoints(Figure figure, int projectType)
         {
             float[,] matr;
-            switch (mode)
+            switch (projectType)
+            {
+                case 0:
+                    matr = perspective;
+                    break;
+                case 1:
+                    matr = isometric;
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+            List<Point3D> points = new List<Point3D>(figure.Vertexes);
+
+            for (int i = 0; i < points.Count; ++i)
+            {
+                float[,] tmp1 = MultMatrix(new float[,] { { points[i].X, points[i].Y, points[i].Z, 1 } }, matr);
+                points[i] = new Point3D(tmp1[0, 0] / tmp1[0, 3], tmp1[0, 1] / tmp1[0, 3]);
+            }
+            return points;
+        }
+
+        public List<Point3D> ProjectZBuff(List<Point3D> surfaces, int projectType = 0)
+        {
+            float[,] matr;
+            switch (projectType)
             {
                 case 0:
                     matr = perspective;

@@ -42,6 +42,46 @@ namespace Lab8
                 colors.Add(Color.FromArgb(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255)));
             
         }
+        private void DrawSurfaces(List<List<int>> visibleSurfaces)
+        {
+            if (curFigure != null)
+            {
+                DeletePic();
+                g.Clear(Color.White);
+                List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
+
+                var centerX = pictureBox1.Width / 2;
+                var centerY = pictureBox1.Height / 2;
+
+                var figureLeftX = edges.Min(e => e.From.X < e.To.X ? e.From.X : e.To.X);
+                var figureLeftY = edges.Min(e => e.From.Y < e.To.Y ? e.From.Y : e.To.Y);
+                var figureRightX = edges.Max(e => e.From.X > e.To.X ? e.From.X : e.To.X);
+                var figureRightY = edges.Max(e => e.From.Y > e.To.Y ? e.From.Y : e.To.Y);
+                var figureCenterX = (figureRightX - figureLeftX) / 2;
+                var figureCenterY = (figureRightY - figureLeftY) / 2;
+
+                var fixX = centerX - figureCenterX + (figureLeftX < 0 ? Math.Abs(figureLeftX) : -Math.Abs(figureLeftX));
+                var fixY = centerY - figureCenterY + (figureLeftY < 0 ? Math.Abs(figureLeftY) : -Math.Abs(figureLeftY));
+                List<Point3D> points = projection.ProjectWithPoints(curFigure, projBox.SelectedIndex);
+
+                foreach (List<int> surface in visibleSurfaces)
+                {
+                    var p1 = points[surface[0]].To2DPoint();
+                    var p2 = points[surface[surface.Count - 1]].To2DPoint();
+                    g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
+                    for (var i = 1; i < surface.Count; i++)
+                    {
+                        p1 = points[surface[i - 1]].To2DPoint();
+                        p2 = points[surface[i]].To2DPoint();
+                        g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
+
+                    }
+                }
+                pictureBox1.Invalidate();
+            }
+            
+        }
+
         private void Draw()
         {
 
@@ -49,7 +89,7 @@ namespace Lab8
             {
                 DeletePic();
                 g.Clear(Color.White);
-                List<Edge> edges = projection.Project(curFigure, projBox.SelectedIndex);
+                List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
 
                 var centerX = pictureBox1.Width / 2;
                 var centerY = pictureBox1.Height / 2;
@@ -66,9 +106,9 @@ namespace Lab8
 
                 foreach (Edge line in edges)
                 {
-                    var p1 = line.From.To2DPoint();
-                    var p2 = line.To.To2DPoint();
-                    g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
+                    var point1 = line.From.To2DPoint();
+                    var point2 = line.To.To2DPoint();
+                    g.DrawLine(pen, point1.X + centerX - figureCenterX, point1.Y + centerY - figureCenterY, point2.X + centerX - figureCenterX, point2.Y + centerY - figureCenterY);
                 }
                 pictureBox1.Invalidate();
             }
@@ -453,7 +493,21 @@ namespace Lab8
             else
             {
                 Draw();
+            }
+        }
 
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            //float x = float.Parse(camPosX.Text);
+            //float y = float.Parse(camPosY.Text);
+            //float z = float.Parse(camPosZ.Text);
+            if (checkBox2.Checked)
+            {
+                DrawSurfaces(RemoveInvisibleSurfaces.RemoveSurfaces(curFigure, new Point3D(100, 0, 15)));
+            }
+            else
+            {
+                Draw();
             }
         }
     }
