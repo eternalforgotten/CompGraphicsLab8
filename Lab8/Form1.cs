@@ -26,6 +26,9 @@ namespace Lab8
         public Form1()
         {
             InitializeComponent();
+            textBox14.Text = "105";
+            textBox15.Text = "20";
+            textBox16.Text = "63";
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             g = Graphics.FromImage(pictureBox1.Image);
             g.Clear(Color.White);
@@ -372,6 +375,8 @@ namespace Lab8
                 axis = 'z';
             }
             curFigure = FigureRotation.CreateRotationFigure(rotationPoints, count, axis);
+            allFigures.Clear();
+            allFigures.Add(curFigure);
             Draw();
         }
 
@@ -494,12 +499,12 @@ namespace Lab8
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            //float x = float.Parse(camPosX.Text);
-            //float y = float.Parse(camPosY.Text);
-            //float z = float.Parse(camPosZ.Text);
+            float x = float.Parse(textBox14.Text);
+            float y = float.Parse(textBox15.Text);
+            float z = float.Parse(textBox16.Text);
             if (checkBox2.Checked)
             {
-                DrawSurfaces(RemoveInvisibleSurfaces.RemoveSurfaces(curFigure, new Point3D(100, 0, 15)));
+                DrawSurfaces(RemoveInvisibleSurfaces.RemoveSurfaces(curFigure, new Point3D(x, y, z)));
             }
             else
             {
