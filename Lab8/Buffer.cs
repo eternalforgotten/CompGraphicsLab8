@@ -46,10 +46,10 @@ namespace Lab8
             int ind = 0;
             for (int i = 0; i < rasterizedFigures.Count; i++)
             {
-                var figureLeftX = rasterizedFigures[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.X));
-                var figureLeftY = rasterizedFigures[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.Y));
-                var figureRightX = rasterizedFigures[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.X));
-                var figureRightY = rasterizedFigures[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.Y));
+                var figureLeftX = rasterizedFigures[i].Where(surface => surface.Count != 0).Min(surface => surface.Min(vertex => vertex.X));
+                var figureLeftY = rasterizedFigures[i].Where(surface => surface.Count != 0).Min(surface => surface.Min(vertex => vertex.Y));
+                var figureRightX = rasterizedFigures[i].Where(surface => surface.Count != 0).Max(surface => surface.Max(vertex => vertex.X));
+                var figureRightY = rasterizedFigures[i].Where(surface => surface.Count != 0).Max(surface => surface.Max(vertex => vertex.Y));
                 var figureCenterX = (figureRightX - figureLeftX) / 2;
                 var figureCenterY = (figureRightY - figureLeftY) / 2;
 
