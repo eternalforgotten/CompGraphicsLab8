@@ -20,7 +20,7 @@ namespace Lab8
         Projection projection;
         Figure curFigure;
         private List<Point3D> rotationPoints;
-        private List<Figure> scenes = new List<Figure>();
+        private List<Figure> allFigures = new List<Figure>();
         private List<Color> colors;
 
         public Form1()
@@ -44,52 +44,47 @@ namespace Lab8
         }
         private void DrawSurfaces(List<List<int>> visibleSurfaces)
         {
-            if (curFigure != null)
+            DeletePic();
+            g.Clear(Color.White);
+            List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
+
+            var centerX = pictureBox1.Width / 2;
+            var centerY = pictureBox1.Height / 2;
+
+            var figureLeftX = edges.Min(e => e.From.X < e.To.X ? e.From.X : e.To.X);
+            var figureLeftY = edges.Min(e => e.From.Y < e.To.Y ? e.From.Y : e.To.Y);
+            var figureRightX = edges.Max(e => e.From.X > e.To.X ? e.From.X : e.To.X);
+            var figureRightY = edges.Max(e => e.From.Y > e.To.Y ? e.From.Y : e.To.Y);
+            var figureCenterX = (figureRightX - figureLeftX) / 2;
+            var figureCenterY = (figureRightY - figureLeftY) / 2;
+
+            var fixX = centerX - figureCenterX + (figureLeftX < 0 ? Math.Abs(figureLeftX) : -Math.Abs(figureLeftX));
+            var fixY = centerY - figureCenterY + (figureLeftY < 0 ? Math.Abs(figureLeftY) : -Math.Abs(figureLeftY));
+            List<Point3D> points = projection.ProjectWithPoints(curFigure, projBox.SelectedIndex);
+
+            foreach (List<int> surface in visibleSurfaces)
             {
-                DeletePic();
-                g.Clear(Color.White);
-                List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
-
-                var centerX = pictureBox1.Width / 2;
-                var centerY = pictureBox1.Height / 2;
-
-                var figureLeftX = edges.Min(e => e.From.X < e.To.X ? e.From.X : e.To.X);
-                var figureLeftY = edges.Min(e => e.From.Y < e.To.Y ? e.From.Y : e.To.Y);
-                var figureRightX = edges.Max(e => e.From.X > e.To.X ? e.From.X : e.To.X);
-                var figureRightY = edges.Max(e => e.From.Y > e.To.Y ? e.From.Y : e.To.Y);
-                var figureCenterX = (figureRightX - figureLeftX) / 2;
-                var figureCenterY = (figureRightY - figureLeftY) / 2;
-
-                var fixX = centerX - figureCenterX + (figureLeftX < 0 ? Math.Abs(figureLeftX) : -Math.Abs(figureLeftX));
-                var fixY = centerY - figureCenterY + (figureLeftY < 0 ? Math.Abs(figureLeftY) : -Math.Abs(figureLeftY));
-                List<Point3D> points = projection.ProjectWithPoints(curFigure, projBox.SelectedIndex);
-
-                foreach (List<int> surface in visibleSurfaces)
+                var p1 = points[surface[0]].To2DPoint();
+                var p2 = points[surface[surface.Count - 1]].To2DPoint();
+                g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
+                for (var i = 1; i < surface.Count; i++)
                 {
-                    var p1 = points[surface[0]].To2DPoint();
-                    var p2 = points[surface[surface.Count - 1]].To2DPoint();
+                    p1 = points[surface[i - 1]].To2DPoint();
+                    p2 = points[surface[i]].To2DPoint();
                     g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
-                    for (var i = 1; i < surface.Count; i++)
-                    {
-                        p1 = points[surface[i - 1]].To2DPoint();
-                        p2 = points[surface[i]].To2DPoint();
-                        g.DrawLine(pen, p1.X + centerX - figureCenterX, p1.Y + centerY - figureCenterY, p2.X + centerX - figureCenterX, p2.Y + centerY - figureCenterY);
 
-                    }
                 }
-                pictureBox1.Invalidate();
             }
-            
+            pictureBox1.Invalidate();
+
         }
 
         private void Draw()
         {
-
-            if (curFigure != null)
+            DeletePic();
+            foreach (var figure in allFigures)
             {
-                DeletePic();
-                g.Clear(Color.White);
-                List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
+                List<Edge> edges = projection.ProjectWithEdges(figure, projBox.SelectedIndex);
 
                 var centerX = pictureBox1.Width / 2;
                 var centerY = pictureBox1.Height / 2;
@@ -149,7 +144,7 @@ namespace Lab8
             curFigure.AddSurface(new List<int> { 2, 3, 7, 6 });
             curFigure.AddSurface(new List<int> { 0, 1, 5, 4 });
 
-            scenes.Add(curFigure);
+            allFigures.Add(curFigure);
             Draw();
         }
 
@@ -177,7 +172,7 @@ namespace Lab8
             curFigure.AddSurface(new List<int> { 0, 2, 3 });
             curFigure.AddSurface(new List<int> { 1, 2, 3 });
 
-            scenes.Add(curFigure);
+            allFigures.Add(curFigure);
             Draw();
         }
        
@@ -213,7 +208,7 @@ namespace Lab8
             curFigure.AddSurface(new List<int> { 5, 2, 3 });
             curFigure.AddSurface(new List<int> { 5, 2, 4 });
 
-            scenes.Add(curFigure);
+            allFigures.Add(curFigure);
             Draw();
         }
 
@@ -222,7 +217,7 @@ namespace Lab8
         private void button3_Click(object sender, EventArgs e)
         {
             g.Clear(Color.White);
-            scenes.Clear();
+            allFigures.Clear();
             pictureBox1.Invalidate();
             rotationPoints.Clear();
         }
@@ -465,6 +460,7 @@ namespace Lab8
             AffineChanges.ScaleCenter(figure, 40);
             AffineChanges.RotateCentral(figure, 60, 0, 0);
             curFigure = figure;
+            allFigures.Add(curFigure);
             Draw();
         }
 
@@ -477,7 +473,7 @@ namespace Lab8
 
         private void ColorizedZBuffer(List<Color> colors)
         {
-            Bitmap bmp = Buffer.CreateZBuffer(pictureBox1.Width, pictureBox1.Height, scenes, colors, projBox.SelectedIndex);
+            Bitmap bmp = Buffer.CreateZBuffer(pictureBox1.Width, pictureBox1.Height, allFigures, colors, projBox.SelectedIndex);
             pictureBox1.Image = bmp;
             pictureBox1.Invalidate();
         }

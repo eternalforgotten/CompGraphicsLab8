@@ -10,44 +10,54 @@ namespace Lab8
     class Buffer
     {
         private static int ProjMode = 0;
-        public static Bitmap CreateZBuffer(int width, int height, List<Figure> scene, List<Color> colors, int projMode = 0)
+        public static Bitmap CreateZBuffer(int width, int height, List<Figure> figures, List<Color> colors, int projMode = 0)
         {
             ProjMode = projMode;
 
             Bitmap bitmap = new Bitmap(width, height);
             for (int i = 0; i < width; i++)
+            {
                 for (int j = 0; j < height; j++)
+                {
                     bitmap.SetPixel(i, j, Color.White);
+                }
+                    
+            }
+                
 
             float[,] zbuff = new float[width, height];
             for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++)
-                    zbuff[i, j] = float.MinValue;
-
-            List<List<List<Point3D>>> rasterizedScene = new List<List<List<Point3D>>>();
-            for (int i = 0; i < scene.Count; i++)
             {
-                rasterizedScene.Add(MakeRasterization(scene[i]));
+                for (int j = 0; j < height; j++)
+                {
+                    zbuff[i, j] = float.MinValue;
+                }
+            }
+
+            List<List<List<Point3D>>> rasterizedFigures = new List<List<List<Point3D>>>();
+            for (int i = 0; i < figures.Count; i++)
+            {
+                rasterizedFigures.Add(MakeRasterization(figures[i]));
             }
 
             var centerX = width / 2;
             var centerY = height / 2;
 
             int ind = 0;
-            for (int i = 0; i < rasterizedScene.Count; i++)
+            for (int i = 0; i < rasterizedFigures.Count; i++)
             {
-                var figureLeftX = rasterizedScene[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.X));
-                var figureLeftY = rasterizedScene[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.Y));
-                var figureRightX = rasterizedScene[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.X));
-                var figureRightY = rasterizedScene[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.Y));
+                var figureLeftX = rasterizedFigures[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.X));
+                var figureLeftY = rasterizedFigures[i].Where(face => face.Count != 0).Min(face => face.Min(vertex => vertex.Y));
+                var figureRightX = rasterizedFigures[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.X));
+                var figureRightY = rasterizedFigures[i].Where(face => face.Count != 0).Max(face => face.Max(vertex => vertex.Y));
                 var figureCenterX = (figureRightX - figureLeftX) / 2;
                 var figureCenterY = (figureRightY - figureLeftY) / 2;
 
                 Random r = new Random();
 
-                for (int j = 0; j < rasterizedScene[i].Count; j++)
+                for (int j = 0; j < rasterizedFigures[i].Count; j++)
                 {
-                    List<Point3D> curr = rasterizedScene[i][j];
+                    List<Point3D> curr = rasterizedFigures[i][j];
                     foreach (Point3D point in curr)
                     {
                         int x = (int)(point.X + centerX - figureCenterX);
@@ -95,41 +105,41 @@ namespace Lab8
             List<Point3D> res = new List<Point3D>();
 
             points.Sort((point1, point2) => point1.Y.CompareTo(point2.Y));
-            var rpoints = points.Select(point => (X: (int)Math.Round(point.X), Y: (int)Math.Round(point.Y), Z: (int)Math.Round(point.Z))).ToList();
+            var transform3DPoints = points.Select(point => (X: (int)Math.Round(point.X), Y: (int)Math.Round(point.Y), Z: (int)Math.Round(point.Z))).ToList();
 
-            var x01 = Interpolate(rpoints[0].Y, rpoints[0].X, rpoints[1].Y, rpoints[1].X);
-            var x12 = Interpolate(rpoints[1].Y, rpoints[1].X, rpoints[2].Y, rpoints[2].X);
-            var x02 = Interpolate(rpoints[0].Y, rpoints[0].X, rpoints[2].Y, rpoints[2].X);
+            var xy0Toxy1 = Interpolate(transform3DPoints[0].Y, transform3DPoints[0].X, transform3DPoints[1].Y, transform3DPoints[1].X);
+            var xy1Toxy2 = Interpolate(transform3DPoints[1].Y, transform3DPoints[1].X, transform3DPoints[2].Y, transform3DPoints[2].X);
+            var xy0Toxy2 = Interpolate(transform3DPoints[0].Y, transform3DPoints[0].X, transform3DPoints[2].Y, transform3DPoints[2].X);
 
-            var z01 = Interpolate(rpoints[0].Y, rpoints[0].Z, rpoints[1].Y, rpoints[1].Z);
-            var z12 = Interpolate(rpoints[1].Y, rpoints[1].Z, rpoints[2].Y, rpoints[2].Z);
-            var z02 = Interpolate(rpoints[0].Y, rpoints[0].Z, rpoints[2].Y, rpoints[2].Z);
+            var yz0Toyz1 = Interpolate(transform3DPoints[0].Y, transform3DPoints[0].Z, transform3DPoints[1].Y, transform3DPoints[1].Z);
+            var yz1Toyz2 = Interpolate(transform3DPoints[1].Y, transform3DPoints[1].Z, transform3DPoints[2].Y, transform3DPoints[2].Z);
+            var yz0Toyz2 = Interpolate(transform3DPoints[0].Y, transform3DPoints[0].Z, transform3DPoints[2].Y, transform3DPoints[2].Z);
 
-            x01.RemoveAt(x01.Count - 1);
-            List<int> x012 = x01.Concat(x12).ToList();
+            xy0Toxy1.RemoveAt(xy0Toxy1.Count - 1);
+            List<int> xy02 = xy0Toxy1.Concat(xy1Toxy2).ToList();
 
-            z01.RemoveAt(z01.Count - 1);
-            List<int> z012 = z01.Concat(z12).ToList();
+            yz0Toyz1.RemoveAt(yz0Toyz1.Count - 1);
+            List<int> yz02 = yz0Toyz1.Concat(yz1Toyz2).ToList();
 
-            int middle = x012.Count / 2;
+            int middle = xy02.Count / 2;
             List<int> leftX, rightX, leftZ, rightZ;
-            if (x02[middle] < x012[middle])
+            if (xy0Toxy2[middle] < xy02[middle])
             {
-                leftX = x02;
-                leftZ = z02;
-                rightX = x012;
-                rightZ = z012;
+                leftX = xy0Toxy2;
+                leftZ = yz0Toyz2;
+                rightX = xy02;
+                rightZ = yz02;
             }
             else
             {
-                leftX = x012;
-                leftZ = z012;
-                rightX = x02;
-                rightZ = z02;
+                leftX = xy02;
+                leftZ = yz02;
+                rightX = xy0Toxy2;
+                rightZ = yz0Toyz2;
             }
 
-            int y0 = rpoints[0].Y;
-            int y2 = rpoints[2].Y;
+            int y0 = transform3DPoints[0].Y;
+            int y2 = transform3DPoints[2].Y;
 
             for (int ind = 0; ind <= y2 - y0; ind++)
             {
