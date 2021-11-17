@@ -40,6 +40,18 @@ namespace Lab8
         {
             return new Point((int)X, (int)Y);
         }
+        public void Normalize() {
+            float len = (float)Math.Sqrt(X * X + Y * Y + Z * Z);
+            X /= len; Y /= len; Z /= len;
+        }
+        public static Point3D VectorProduct(Point3D p1, Point3D p2)
+        {
+            return new Point3D(p1.Y * p2.Z - p1.Z * p2.Y, p1.Z * p2.X - p1.X * p2.Z, p1.X * p2.Y - p1.Y * p2.X);
+        }
+        public static float ScalarProduct(Point3D p1, Point3D p2)
+        {
+            return p1.X * p2.X + p1.Y * p2.Y + p1.Z * p2.Z;
+        }
         ~Point3D() { }
     }
     public class Edge
@@ -105,7 +117,17 @@ namespace Lab8
                 Adjacency.Add(i, new List<int>());
             }
         }
-
+        public Figure(Figure old)
+        {
+            Vertexes = new List<Point3D>(old.Vertexes);
+            Edges = new List<Edge>(old.Edges);
+            Adjacency = new Dictionary<int, List<int>>();
+            foreach (var ad in old.Adjacency)
+                Adjacency.Add(ad.Key, new List<int>(ad.Value));
+            Surfaces = new List<List<int>>();
+            foreach (var f in old.Surfaces)
+                Surfaces.Add(new List<int>(f));
+        }
         public Figure() { }
 
         public void AddEdges(int a, int b)

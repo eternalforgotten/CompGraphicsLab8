@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AffineChanges.cs" />
     <Compile Include="Buffer.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="FigureRotation.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
