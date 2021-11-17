@@ -18,6 +18,7 @@ namespace Lab8
         Graphics g;
         Pen pen;
         Projection projection;
+        Camera camera = new Camera();
         Figure curFigure;
         private List<Point3D> rotationPoints;
         private List<Figure> scenes = new List<Figure>();
@@ -40,7 +41,11 @@ namespace Lab8
             Random r = new Random(Environment.TickCount);
             for (int i = 0; i < 100; ++i)
                 colors.Add(Color.FromArgb(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255)));
-            
+
+            camera.Position = new Point3D(int.Parse(textBox15.Text), int.Parse(textBox16.Text), int.Parse(textBox17.Text));
+            camera.Focus = new Point3D(0, 0, 1000);
+            camera.Offset = new Point3D(pictureBox1.Width / 2, pictureBox1.Height / 2);
+            this.KeyDown += new KeyEventHandler(movement);
         }
         private void DrawSurfaces(List<List<int>> visibleSurfaces)
         {
@@ -78,39 +83,124 @@ namespace Lab8
                     }
                 }
                 pictureBox1.Invalidate();
-            }
-            
+            }            
         }
 
         private void Draw()
         {
-
-            if (curFigure != null)
+            if (!checkBox3.Checked)
             {
-                DeletePic();
-                g.Clear(Color.White);
-                List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
-
-                var centerX = pictureBox1.Width / 2;
-                var centerY = pictureBox1.Height / 2;
-
-                var figureLeftX = edges.Min(e => e.From.X < e.To.X ? e.From.X : e.To.X);
-                var figureLeftY = edges.Min(e => e.From.Y < e.To.Y ? e.From.Y : e.To.Y);
-                var figureRightX = edges.Max(e => e.From.X > e.To.X ? e.From.X : e.To.X);
-                var figureRightY = edges.Max(e => e.From.Y > e.To.Y ? e.From.Y : e.To.Y);
-
-
-                var figureCenterX = (figureRightX - figureLeftX) / 2;
-                var figureCenterY = (figureRightY - figureLeftY) / 2;
-
-
-                foreach (Edge line in edges)
+                if (curFigure != null)
                 {
-                    var point1 = line.From.To2DPoint();
-                    var point2 = line.To.To2DPoint();
-                    g.DrawLine(pen, point1.X + centerX - figureCenterX, point1.Y + centerY - figureCenterY, point2.X + centerX - figureCenterX, point2.Y + centerY - figureCenterY);
+                    DeletePic();
+                    g.Clear(Color.White);
+                    List<Edge> edges = projection.ProjectWithEdges(curFigure, projBox.SelectedIndex);
+
+                    var centerX = pictureBox1.Width / 2;
+                    var centerY = pictureBox1.Height / 2;
+
+                    var figureLeftX = edges.Min(e => e.From.X < e.To.X ? e.From.X : e.To.X);
+                    var figureLeftY = edges.Min(e => e.From.Y < e.To.Y ? e.From.Y : e.To.Y);
+                    var figureRightX = edges.Max(e => e.From.X > e.To.X ? e.From.X : e.To.X);
+                    var figureRightY = edges.Max(e => e.From.Y > e.To.Y ? e.From.Y : e.To.Y);
+
+
+                    var figureCenterX = (figureRightX - figureLeftX) / 2;
+                    var figureCenterY = (figureRightY - figureLeftY) / 2;
+
+
+                    foreach (Edge line in edges)
+                    {
+                        var point1 = line.From.To2DPoint();
+                        var point2 = line.To.To2DPoint();
+                        g.DrawLine(pen, point1.X + centerX - figureCenterX, point1.Y + centerY - figureCenterY, point2.X + centerX - figureCenterX, point2.Y + centerY - figureCenterY);
+                    }
+                    pictureBox1.Invalidate();
                 }
-                pictureBox1.Invalidate();
+            }
+            else
+                DrawCam();
+        }
+        public void DrawCam()
+        {
+            g.Clear(Color.White);
+            //change position of camera
+            Point3D p1 = camera.Position, p2 = camera.Focus;
+            double dist = Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y) + (p1.Z - p2.Z) * (p1.Z - p2.Z));
+            double angleBeta = (180 - camera.AngleX) / 2;
+            double angleGamma = 90 - angleBeta;
+            float l = (float)(dist * Math.Sqrt(2 * (1 - Math.Cos(camera.AngleX * Math.PI / 180))));
+            float x = (float)(l * Math.Cos(angleGamma * Math.PI / 180));
+            float z = (float)(l * Math.Sin(angleGamma * Math.PI / 180));
+            Point3D currentPosition = p1 + new Point3D(x, 0, z);
+            //System.Diagnostics.Debug.WriteLine($"Camera Position: {currentPosition}");
+            
+            Point3D Z = p2 - currentPosition; Z.Normalize();
+            Point3D X = Point3D.VectorProduct(new Point3D(0, 1, 0), Z); X.Normalize();
+            Point3D Y = Point3D.VectorProduct(Z, X); Y.Normalize();
+
+            float[,] matrixV =
+                 {
+                     { X.X, X.Y, X.Z, -Point3D.ScalarProduct(X, currentPosition) },
+                     { Y.X, Y.Y, Y.Z, -Point3D.ScalarProduct(Y, currentPosition) },
+                     { Z.X, Z.Y, Z.Z, -Point3D.ScalarProduct(Z, currentPosition) },
+                     { 0, 0, 0, 1 }
+                 };
+
+            foreach (var fig in scenes)
+            {
+                Figure curPolyhedron = new Figure(fig);
+                AffineChanges.RecreateFigure(curPolyhedron, matrixV);
+                //System.Diagnostics.Debug.WriteLine($"Cube Position: {curPolyhedron.Center}");
+                foreach (var line in projection.ProjectWithEdges(curPolyhedron, 0))
+                    g.DrawLine(new Pen(Color.Black), new PointF(line.From.X + camera.Offset.X, line.From.Y + camera.Offset.Y),
+                                    new PointF(line.To.X + camera.Offset.X, line.To.Y + camera.Offset.Y));
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void movement(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode.ToString().CompareTo("Up") == 0)
+            {
+                camera.MoveCamera(0, 0, -4);
+                Draw();
+            }
+
+            if (e.KeyCode.ToString().CompareTo("Down") == 0)
+            {
+                camera.MoveCamera(0, 0, 4);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("W") == 0)
+            {
+                camera.MoveCamera(0, -4, 0);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("S") == 0)
+            {
+                camera.MoveCamera(0, 4, 0);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("D") == 0)
+            {
+                camera.MoveCamera(4, 0, 0);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("A") == 0)
+            {
+                camera.MoveCamera(-4, 0, 0);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("Left") == 0)
+            { 
+                camera.RotateCamera(-2, 0);
+                Draw();
+            }
+            if (e.KeyCode.ToString().CompareTo("Right") == 0)
+            {
+                camera.RotateCamera(2, 0);
+                Draw();
             }
         }
 

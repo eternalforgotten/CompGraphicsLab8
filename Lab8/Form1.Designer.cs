@@ -103,6 +103,13 @@
             this.label24 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.textBox15 = new System.Windows.Forms.TextBox();
+            this.textBox16 = new System.Windows.Forms.TextBox();
+            this.textBox17 = new System.Windows.Forms.TextBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rotateAngle)).BeginInit();
             this.SuspendLayout();
@@ -853,11 +860,79 @@
             this.checkBox2.UseVisualStyleBackColor = true;
             this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(8, 725);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(80, 21);
+            this.checkBox3.TabIndex = 77;
+            this.checkBox3.Text = "Камера";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // textBox15
+            // 
+            this.textBox15.Location = new System.Drawing.Point(8, 780);
+            this.textBox15.Name = "textBox15";
+            this.textBox15.Size = new System.Drawing.Size(55, 22);
+            this.textBox15.TabIndex = 79;
+            this.textBox15.Text = "0";
+            // 
+            // textBox16
+            // 
+            this.textBox16.Location = new System.Drawing.Point(80, 780);
+            this.textBox16.Name = "textBox16";
+            this.textBox16.Size = new System.Drawing.Size(60, 22);
+            this.textBox16.TabIndex = 80;
+            this.textBox16.Text = "0";
+            // 
+            // textBox17
+            // 
+            this.textBox17.Location = new System.Drawing.Point(160, 780);
+            this.textBox17.Name = "textBox17";
+            this.textBox17.Size = new System.Drawing.Size(61, 22);
+            this.textBox17.TabIndex = 81;
+            this.textBox17.Text = "15";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(21, 756);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(17, 17);
+            this.label25.TabIndex = 82;
+            this.label25.Text = "X";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(103, 760);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(17, 17);
+            this.label26.TabIndex = 83;
+            this.label26.Text = "Y";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(180, 760);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(17, 17);
+            this.label27.TabIndex = 84;
+            this.label27.Text = "Z";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1281, 909);
+            this.Controls.Add(this.label27);
+            this.Controls.Add(this.label26);
+            this.Controls.Add(this.label25);
+            this.Controls.Add(this.textBox17);
+            this.Controls.Add(this.textBox16);
+            this.Controls.Add(this.textBox15);
+            this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label24);
@@ -931,6 +1006,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
+            this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Лабораторная работа №8";
@@ -1017,5 +1093,12 @@
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.TextBox textBox15;
+        private System.Windows.Forms.TextBox textBox16;
+        private System.Windows.Forms.TextBox textBox17;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label27;
     }
 }
