@@ -14,7 +14,7 @@ namespace Lab8
         }
 
 
-        static private void RecreateFigure(Figure fig, float[,] matr)
+        static public void RecreateFigure(Figure fig, float[,] matr)
         {
             List<Point3D> p = new List<Point3D>();
             for (int i = 0; i < fig.Vertexes.Count; ++i)
